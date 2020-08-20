@@ -8,10 +8,13 @@
         <meta name="apple-mobile-web-app-capable" content="yes">
         <link rel="stylesheet" href="css/leaflet.css">
         <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
         <style>
-        #map {
-            width: 1014px;
-            height: 540px;
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
         }
         </style>
         <title></title>
@@ -28,8 +31,9 @@
         <script src="js/rbush.min.js"></script>
         <script src="js/labelgun.min.js"></script>
         <script src="js/labels.js"></script>
+        <script src="js/leaflet-measure.js"></script>
         <script src="data/TCD_adm1_1.js"></script>
-        <script src="data/Infodegomtrieajoute_2.js"></script>
+        <script src="data/WebMapping2_2.js"></script>
         <script>
         var highlightLayer;
         function highlightFeature(e) {
@@ -38,12 +42,28 @@
         }
         var map = L.map('map', {
             zoomControl:true, maxZoom:20, minZoom:1
-        }).fitBounds([[12.109224687594784,15.033447990035281],[12.113843810088271,15.042136748331583]]);
+        })
         var hash = new L.Hash(map);
         map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
         var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
         var bounds_group = new L.featureGroup([]);
         function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+            map.setMaxBounds(map.getBounds());
         }
         map.createPane('pane_GoogleMaps_0');
         map.getPane('pane_GoogleMaps_0').style.zIndex = 400;
@@ -75,6 +95,7 @@
                     <tr>\
                         <td colspan="2">' + (feature.properties['NAME_1'] !== null ? autolinker.link(feature.properties['NAME_1'].toLocaleString()) : '') + '</td>\
                     </tr>\
+                    
                 </table>';
             layer.bindPopup(popupContent, {maxHeight: 400});
         }
@@ -106,7 +127,7 @@
         });
         bounds_group.addLayer(layer_TCD_adm1_1);
         map.addLayer(layer_TCD_adm1_1);
-        function pop_Infodegomtrieajoute_2(feature, layer) {
+        function pop_WebMapping2_2(feature, layer) {
             layer.on({
                 mouseout: function(e) {
                     if (typeof layer.closePopup == 'function') {
@@ -165,7 +186,7 @@
                     <tr>\
                         <td colspan="2">' + (feature.properties['RelPath'] !== null ? autolinker.link(feature.properties['RelPath'].toLocaleString()) : '') + '</td>\
                     </tr>\
-                     <tr>\
+                    <tr>\
                         <td colspan="2"><img src="' + feature.properties['RelPath'] +'"></td>\
                     </tr>\
                     <tr>\
@@ -181,10 +202,10 @@
             layer.bindPopup(popupContent, {maxHeight: 400});
         }
 
-        function style_Infodegomtrieajoute_2_0() {
+        function style_WebMapping2_2_0() {
             return {
-                pane: 'pane_Infodegomtrieajoute_2',
-                radius: 14.000000000000009,
+                pane: 'pane_WebMapping2_2',
+                radius: 4.0,
                 opacity: 1,
                 color: 'rgba(35,35,35,1.0)',
                 dashArray: '',
@@ -193,30 +214,32 @@
                 weight: 1,
                 fill: true,
                 fillOpacity: 1,
-                fillColor: 'rgba(243,166,178,1.0)',
+                fillColor: 'rgba(145,82,45,1.0)',
                 interactive: true,
             }
         }
-        map.createPane('pane_Infodegomtrieajoute_2');
-        map.getPane('pane_Infodegomtrieajoute_2').style.zIndex = 402;
-        map.getPane('pane_Infodegomtrieajoute_2').style['mix-blend-mode'] = 'normal';
-        var layer_Infodegomtrieajoute_2 = new L.geoJson(json_Infodegomtrieajoute_2, {
+        map.createPane('pane_WebMapping2_2');
+        map.getPane('pane_WebMapping2_2').style.zIndex = 402;
+        map.getPane('pane_WebMapping2_2').style['mix-blend-mode'] = 'normal';
+        var layer_WebMapping2_2 = new L.geoJson(json_WebMapping2_2, {
             attribution: '',
             interactive: true,
-            dataVar: 'json_Infodegomtrieajoute_2',
-            layerName: 'layer_Infodegomtrieajoute_2',
-            pane: 'pane_Infodegomtrieajoute_2',
-            onEachFeature: pop_Infodegomtrieajoute_2,
+            dataVar: 'json_WebMapping2_2',
+            layerName: 'layer_WebMapping2_2',
+            pane: 'pane_WebMapping2_2',
+            onEachFeature: pop_WebMapping2_2,
             pointToLayer: function (feature, latlng) {
                 var context = {
                     feature: feature,
                     variables: {}
                 };
-                return L.circleMarker(latlng, style_Infodegomtrieajoute_2_0(feature));
+                return L.circleMarker(latlng, style_WebMapping2_2_0(feature));
             },
         });
-        bounds_group.addLayer(layer_Infodegomtrieajoute_2);
-        map.addLayer(layer_Infodegomtrieajoute_2);
+        bounds_group.addLayer(layer_WebMapping2_2);
+        map.addLayer(layer_WebMapping2_2);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'<img src="legend/WebMapping2_2.png" /> Web Mapping 2': layer_WebMapping2_2,'<img src="legend/TCD_adm1_1.png" /> TCD_adm1': layer_TCD_adm1_1,"Google Maps": layer_GoogleMaps_0,}).addTo(map);
         setBounds();
         </script>
     </body>
